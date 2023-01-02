@@ -15,7 +15,7 @@ const TextInputModal = ({
     onPressBackdrop: () => void;
 }) => {
     return (
-        <Modal animationType="slide" transparent={true} visible={modalVisible}>
+        <Modal animationType="slide" transparent={true} visible={modalVisible} statusBarTranslucent={true}>
             <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
                 <Pressable onPress={onPressBackdrop} style={{ flex: 1 }}>
                     <View style={{ width: '100%', position: 'absolute', bottom: 0, flex: 1 }}>

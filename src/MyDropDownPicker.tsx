@@ -10,6 +10,7 @@ const MyDropDownPicker = ({
     onPressAddAlbum,
     onPressHeader,
     onPressAlbum,
+    onLongPressAlbum,
     albums,
     selectedAlbum,
 }: {
@@ -17,6 +18,7 @@ const MyDropDownPicker = ({
     onPressAddAlbum: () => void;
     onPressHeader: () => void;
     onPressAlbum: (album: MyAlbum) => void;
+    onLongPressAlbum: (albumId: number) => void;
     albums: MyAlbum[];
     selectedAlbum: MyAlbum;
 }) => {
@@ -33,7 +35,7 @@ const MyDropDownPicker = ({
                 }}>
                 <Text style={{ fontWeight: 'bold' }}>{selectedAlbum.title}</Text>
                 <SimpleLineIcons
-                    name={isDropDownOpen ? 'arrow-down' : 'arrow-up'}
+                    name={isDropDownOpen ? 'arrow-up' : 'arrow-down'}
                     size={12}
                     color="black"
                     style={{ marginLeft: 8 }}
@@ -67,7 +69,9 @@ const MyDropDownPicker = ({
                         return (
                             <TouchableOpacity
                                 onPress={() => onPressAlbum(album)}
+                                onLongPress={() => onLongPressAlbum(album.id)}
                                 key={`album-${album.id}`}
+                                activeOpacity={1}
                                 style={{
                                     paddingVertical: 10,
                                     alignItems: 'center',
