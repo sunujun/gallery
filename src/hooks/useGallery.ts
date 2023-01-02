@@ -5,10 +5,26 @@ import { launchImageLibrary } from 'react-native-image-picker';
 export type MyImage = {
     id: number;
     uri: string;
+    albumId: number;
+};
+
+export type MyAlbum = {
+    id: number;
+    title: string;
+};
+
+const defaultAlbum: MyAlbum = {
+    id: 1,
+    title: '기본',
 };
 
 export const useGallery = () => {
     const [images, setImages] = useState<MyImage[]>([]);
+    const [selectedAlbum, setSelectedAlbum] = useState(defaultAlbum);
+    const [albums, setAlbums] = useState([defaultAlbum]);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [albumTitle, setAlbumTitle] = useState('');
+    const [isDropDownOpen, setIsDropDownOpen] = useState(false);
 
     const pickImage = async () => {
         let result = await launchImageLibrary({
@@ -22,6 +38,7 @@ export const useGallery = () => {
                 const newImage: MyImage = {
                     id: lastId + 1,
                     uri: result.assets[0].uri,
+                    albumId: selectedAlbum.id,
                 };
                 setImages([...images, newImage]);
             }
@@ -42,18 +59,59 @@ export const useGallery = () => {
             },
         ]);
     };
+    const openModal = () => {
+        setModalVisible(true);
+    };
+    const closeModal = () => {
+        setModalVisible(false);
+    };
+    const addAlbum = () => {
+        const lastId = albums.length === 0 ? 0 : albums[albums.length - 1].id;
+        const newAlbum = {
+            id: lastId + 1,
+            title: albumTitle,
+        };
+        setAlbums([...albums, newAlbum]);
+    };
+    const resetAlbumTitle = () => {
+        setAlbumTitle('');
+    };
+    const openDropDown = () => {
+        setIsDropDownOpen(true);
+    };
+    const closeDropDown = () => {
+        setIsDropDownOpen(false);
+    };
+    const selectAlbum = (album: MyAlbum) => {
+        setSelectedAlbum(album);
+    };
+
+    const filteredImages = images.filter(image => image.albumId === selectedAlbum.id);
     const imagesWithAddButton: MyImage[] = [
-        ...images,
+        ...filteredImages,
         {
             id: -1,
             uri: '',
+            albumId: -1,
         },
     ];
 
     return {
-        images,
         imagesWithAddButton,
         pickImage,
         deleteImage,
+        selectedAlbum,
+        modalVisible,
+        openModal,
+        closeModal,
+        albumTitle,
+        setAlbumTitle,
+        addAlbum,
+        resetAlbumTitle,
+        isDropDownOpen,
+        openDropDown,
+        closeDropDown,
+        albums,
+        selectAlbum,
     };
 };
