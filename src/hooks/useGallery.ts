@@ -28,6 +28,20 @@ export const useGallery = () => {
     const [isDropDownOpen, setIsDropDownOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState<MyImage | null>(null);
 
+    const filteredImages = images.filter(image => image.albumId === selectedAlbum.id);
+    const showPreviousArrow = filteredImages.findIndex(image => image.id === selectedImage?.id) !== 0;
+    const showNextArrow =
+        filteredImages.findIndex(image => image.id === selectedImage?.id) !== filteredImages.length - 1;
+
+    const imagesWithAddButton: MyImage[] = [
+        ...filteredImages,
+        {
+            id: -1,
+            uri: '',
+            albumId: -1,
+        },
+    ];
+
     const pickImage = async () => {
         let result = await launchImageLibrary({
             mediaType: 'mixed',
@@ -121,16 +135,30 @@ export const useGallery = () => {
     const selectImage = (image: MyImage) => {
         setSelectedImage(image);
     };
-
-    const filteredImages = images.filter(image => image.albumId === selectedAlbum.id);
-    const imagesWithAddButton: MyImage[] = [
-        ...filteredImages,
-        {
-            id: -1,
-            uri: '',
-            albumId: -1,
-        },
-    ];
+    const moveToPreviousImage = () => {
+        if (!selectedImage) {
+            return;
+        }
+        const selectedImageIndex = filteredImages.findIndex(image => image.id === selectedImage.id);
+        const previousImageIndex = selectedImageIndex - 1;
+        if (previousImageIndex < 0) {
+            return;
+        }
+        const previousImage = filteredImages[previousImageIndex];
+        setSelectedImage(previousImage);
+    };
+    const moveToNextImage = () => {
+        if (!selectedImage) {
+            return;
+        }
+        const selectedImageIndex = filteredImages.findIndex(image => image.id === selectedImage.id);
+        const nextImageIndex = selectedImageIndex + 1;
+        if (nextImageIndex > filteredImages.length - 1 || nextImageIndex === -1) {
+            return;
+        }
+        const nextImage = filteredImages[nextImageIndex];
+        setSelectedImage(nextImage);
+    };
 
     return {
         imagesWithAddButton,
@@ -155,5 +183,9 @@ export const useGallery = () => {
         closeBigImageModal,
         selectImage,
         selectedImage,
+        moveToPreviousImage,
+        moveToNextImage,
+        showPreviousArrow,
+        showNextArrow,
     };
 };

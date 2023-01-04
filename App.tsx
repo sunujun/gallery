@@ -33,6 +33,10 @@ const App = () => {
         closeBigImageModal,
         selectImage,
         selectedImage,
+        moveToPreviousImage,
+        moveToNextImage,
+        showPreviousArrow,
+        showNextArrow,
     } = useGallery();
 
     const onPressOpenGallery = () => {
@@ -103,6 +107,13 @@ const App = () => {
     const onPressBigImageModalBackdrop = () => {
         closeBigImageModal();
     };
+    const onPressArrow = (direction: 'left' | 'right') => {
+        if (direction === 'left') {
+            moveToPreviousImage();
+        } else {
+            moveToNextImage();
+        }
+    };
 
     return (
         <SafeAreaProvider>
@@ -131,6 +142,9 @@ const App = () => {
                     modalVisible={bigImageModalVisible}
                     onPressBackdrop={onPressBigImageModalBackdrop}
                     selectedImage={selectedImage}
+                    onPressArrow={onPressArrow}
+                    showPreviousArrow={showPreviousArrow}
+                    showNextArrow={showNextArrow}
                 />
                 {/* 이미지 리스트 */}
                 <FlatList
