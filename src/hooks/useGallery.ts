@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { launchImageLibrary } from 'react-native-image-picker';
 
 export type MyImage = {
@@ -16,6 +17,11 @@ export type MyAlbum = {
 const defaultAlbum: MyAlbum = {
     id: 1,
     title: '기본',
+};
+
+const ASYNC_KEY = {
+    IMAGES: 'images',
+    ALBUMS: 'albums',
 };
 
 export const useGallery = () => {
@@ -42,6 +48,33 @@ export const useGallery = () => {
         },
     ];
 
+    const initValues = async () => {
+        const imagesFromStorage = await AsyncStorage.getItem(ASYNC_KEY.IMAGES);
+        if (imagesFromStorage !== null) {
+            const parsed = JSON.parse(imagesFromStorage);
+            setImages(parsed);
+        }
+        const albumsFromStorage = await AsyncStorage.getItem(ASYNC_KEY.ALBUMS);
+        if (albumsFromStorage !== null) {
+            const parsed = JSON.parse(albumsFromStorage);
+            setAlbums(parsed);
+        }
+    };
+
+    useEffect(() => {
+        initValues();
+    }, []);
+
+    const _setImages = (newImages: MyImage[]) => {
+        setImages(newImages);
+        AsyncStorage.setItem(ASYNC_KEY.IMAGES, JSON.stringify(newImages));
+    };
+
+    const _setAlbums = (newAlbums: MyAlbum[]) => {
+        setAlbums(newAlbums);
+        AsyncStorage.setItem(ASYNC_KEY.ALBUMS, JSON.stringify(newAlbums));
+    };
+
     const pickImage = async () => {
         let result = await launchImageLibrary({
             mediaType: 'mixed',
@@ -56,7 +89,7 @@ export const useGallery = () => {
                     uri: result.assets[0].uri,
                     albumId: selectedAlbum.id,
                 };
-                setImages([...images, newImage]);
+                _setImages([...images, newImage]);
             }
         }
     };
@@ -70,7 +103,7 @@ export const useGallery = () => {
                 text: '네',
                 onPress: () => {
                     const newImages = images.filter(image => image.id !== imageId);
-                    setImages(newImages);
+                    _setImages(newImages);
                 },
             },
         ]);
@@ -91,7 +124,7 @@ export const useGallery = () => {
             id: lastId + 1,
             title: albumTitle,
         };
-        setAlbums([...albums, newAlbum]);
+        _setAlbums([...albums, newAlbum]);
     };
     const resetAlbumTitle = () => {
         setAlbumTitle('');
@@ -120,7 +153,7 @@ export const useGallery = () => {
                 onPress: () => {
                     deleteAlbumImages(albumId);
                     const newAlbums = albums.filter(album => album.id !== albumId);
-                    setAlbums(newAlbums);
+                    _setAlbums(newAlbums);
                     setSelectedAlbum(defaultAlbum);
                 },
             },
