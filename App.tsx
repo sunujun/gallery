@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Alert, Dimensions, FlatList, Image, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Alert, StatusBar, StyleSheet } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import mobileAds from 'react-native-google-mobile-ads';
 import { MyAlbum, MyImage, useGallery } from './src/hooks/useGallery';
@@ -7,9 +7,7 @@ import { useRewardAd } from './src/hooks/useRewardAd';
 import BigImageModal from './src/BigImageModal';
 import MyDropDownPicker from './src/MyDropDownPicker';
 import TextInputModal from './src/TextInputModal';
-
-const width = Dimensions.get('screen').width;
-const columnSize = width / 3;
+import ImageList from './src/ImageList';
 
 const App = () => {
     mobileAds()
@@ -66,34 +64,7 @@ const App = () => {
         selectImage(image);
         openBigImageModal();
     };
-    const renderItem = ({ item: image }: { item: MyImage }) => {
-        const { id, uri } = image;
-        if (id === -1) {
-            return (
-                <TouchableOpacity
-                    onPress={onPressOpenGallery}
-                    style={{
-                        width: columnSize,
-                        height: columnSize,
-                        backgroundColor: 'lightgrey',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                    }}>
-                    <Text style={{ fontWeight: '100', fontSize: 45 }}>+</Text>
-                </TouchableOpacity>
-            );
-        }
 
-        return (
-            <TouchableOpacity
-                onPress={() => onPressImage(image)}
-                onLongPress={() => {
-                    onLongPressImage(id);
-                }}>
-                <Image source={{ uri }} style={{ width: columnSize, height: columnSize }} />
-            </TouchableOpacity>
-        );
-    };
     const onPressWatchAd = () => {
         rewarded.show();
     };
@@ -180,11 +151,11 @@ const App = () => {
                     showNextArrow={showNextArrow}
                 />
                 {/* 이미지 리스트 */}
-                <FlatList
-                    data={imagesWithAddButton}
-                    renderItem={renderItem}
-                    numColumns={3}
-                    style={{ width: '100%', zIndex: -1 }}
+                <ImageList
+                    imagesWithAddButton={imagesWithAddButton}
+                    onPressOpenGallery={onPressOpenGallery}
+                    onPressImage={onPressImage}
+                    onLongPressImage={onLongPressImage}
                 />
             </SafeAreaView>
         </SafeAreaProvider>
