@@ -1,4 +1,7 @@
 {
     "name": "Gallery",
-    "displayName": "Gallery"
+    "displayName": "Gallery",
+    "react-native-google-mobile-ads": {
+        "android_app_id": "ca-app-pub-1247882024503140~7327202978"
+    }
 }

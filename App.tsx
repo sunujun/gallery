@@ -1,7 +1,9 @@
-import React from 'react';
-import { Dimensions, FlatList, Image, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import React, { useEffect } from 'react';
+import { Alert, Dimensions, FlatList, Image, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import mobileAds from 'react-native-google-mobile-ads';
 import { MyAlbum, MyImage, useGallery } from './src/hooks/useGallery';
+import { useRewardAd } from './src/hooks/useRewardAd';
 import BigImageModal from './src/BigImageModal';
 import MyDropDownPicker from './src/MyDropDownPicker';
 import TextInputModal from './src/TextInputModal';
@@ -10,6 +12,13 @@ const width = Dimensions.get('screen').width;
 const columnSize = width / 3;
 
 const App = () => {
+    mobileAds()
+        .initialize()
+        .then(() => {
+            // Initialization complete!
+        });
+
+    const { rewarded, isEarned, setIsEarned, setIsLoaded } = useRewardAd();
     const {
         imagesWithAddButton,
         pickImage,
@@ -38,6 +47,14 @@ const App = () => {
         showPreviousArrow,
         showNextArrow,
     } = useGallery();
+
+    useEffect(() => {
+        if (isEarned) {
+            openTextInputModal();
+            setIsLoaded(false);
+            setIsEarned(false);
+        }
+    }, [isEarned, openTextInputModal, setIsEarned, setIsLoaded]);
 
     const onPressOpenGallery = () => {
         pickImage();
@@ -77,8 +94,24 @@ const App = () => {
             </TouchableOpacity>
         );
     };
+    const onPressWatchAd = () => {
+        rewarded.show();
+    };
     const onPressAddAlbum = () => {
-        openTextInputModal();
+        if (albums.length >= 2) {
+            Alert.alert('광고를 시청해야 앨범을 추가할 수 있습니다.', '', [
+                {
+                    style: 'cancel',
+                    text: '닫기',
+                },
+                {
+                    text: '광고 시청',
+                    onPress: onPressWatchAd,
+                },
+            ]);
+        } else {
+            openTextInputModal();
+        }
     };
     const onSubmitEditing = () => {
         if (albumTitle) {
