@@ -25,7 +25,13 @@ const TextInputModal = ({
                             onChangeText={setAlbumTitle}
                             onSubmitEditing={onSubmitEditing}
                             autoFocus={true}
-                            style={{ width: '100%', padding: 10, borderWidth: 0.5, borderColor: 'lightgrey' }}
+                            style={{
+                                width: '100%',
+                                padding: 10,
+                                borderWidth: 0.5,
+                                borderColor: 'lightgrey',
+                                backgroundColor: 'white',
+                            }}
                         />
                     </View>
                 </Pressable>

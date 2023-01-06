@@ -110,7 +110,7 @@ export const useGallery = () => {
     };
     const deleteAlbumImages = (albumId: number) => {
         const newImages = images.filter(image => image.albumId !== albumId);
-        setImages(newImages);
+        _setImages(newImages);
     };
     const openTextInputModal = () => {
         setTextInputModalVisible(true);
